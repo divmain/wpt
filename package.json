@@ -1,0 +1,24 @@
+{
+  "name": "wpt",
+  "version": "0.0.1",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "inject-synthetic-shadow": "git show master:resources/testharness.js | cat node_modules/@lwc/synthetic-shadow/dist/synthetic-shadow.js - | sed 's/process.env.NODE_ENV/\"production\"/g' > ./resources/testharness.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/web-platform-tests/wpt.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/web-platform-tests/wpt/issues"
+  },
+  "homepage": "https://github.com/web-platform-tests/wpt#readme",
+  "dependencies": {
+    "@lwc/synthetic-shadow": "^2.4.0"
+  }
+}
