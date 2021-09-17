@@ -31,7 +31,7 @@ Run tests:
 If the script can't find your Chrome binary, try:
 
 ```bash
-./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty > ./stdout.txt
+./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty 2>&1 > ./stdout.txt
 ```
 
 Install `chromedriver` if prompted.
