@@ -20,7 +20,10 @@ async function* findHtmlFiles (basePath) {
     if (dirEntry.isDirectory()) {
       yield* findHtmlFiles(fullPath);
     }
-    if (dirEntry.isFile() && dirEntry.name.endsWith('.html')) {
+    if (
+      dirEntry.isFile() &&
+      (dirEntry.name.endsWith('.html') || dirEntry.name.endsWith('.htm'))
+    ) {
       yield fullPath;
     }
   }

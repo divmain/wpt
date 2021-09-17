@@ -34,7 +34,7 @@ If the script can't find your Chrome binary, try:
 # this
 ./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty 2>&1 > ./stdout.txt
 # or this
-./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --include-file ./lwc-test-list.txt --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty 2>&1 > ./stdout.txt
+./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --include-file ./lwc/test-list.txt --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty 2>&1 > ./stdout.txt
 ```
 
 Install `chromedriver` if prompted.
