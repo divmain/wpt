@@ -211,6 +211,7 @@ class WorkersHandler(HtmlWrapperHandler):
                     (".worker.html", ".worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -227,6 +228,7 @@ class WorkerModulesHandler(HtmlWrapperHandler):
                     (".worker.html", ".worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -241,6 +243,7 @@ class WindowHandler(HtmlWrapperHandler):
     path_replace = [(".window.html", ".window.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -255,6 +258,7 @@ class AnyHtmlHandler(HtmlWrapperHandler):
     path_replace = [(".any.html", ".any.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script>
 self.GLOBAL = {
@@ -275,6 +279,7 @@ class SharedWorkersHandler(HtmlWrapperHandler):
     path_replace = [(".any.sharedworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -290,6 +295,7 @@ class SharedWorkerModulesHandler(HtmlWrapperHandler):
     path_replace = [(".any.sharedworker-module.html", ".any.js", ".any.worker-module.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -305,6 +311,7 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
     path_replace = [(".any.serviceworker.html", ".any.js", ".any.worker.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -327,6 +334,7 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
                      ".any.js", ".any.worker-module.js")]
     wrapper = """<!doctype html>
 <meta charset=utf-8>
+<script src="/resources/synthetic-shadow.js"></script>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
