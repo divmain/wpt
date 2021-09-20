@@ -1,0 +1,56 @@
+<title>Postmessage of a WebAssembly.Module cross-origin fails with a messageerror</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="./resources/test-incrementer.js"></script>
+
+<body></body>
+
+<script>
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  const kRemoteOrigin = get_host_info().OTHER_ORIGIN;
+  iframe.src = `${kRemoteOrigin}${base_path()}` +
+  'resources/incrementer-iframe-failure.html';
+  const iframeLoaded = new Promise(resolve => iframe.onload = resolve);
+  document.body.appendChild(iframe);
+  await iframeLoaded;
+  t.add_cleanup(() => {
+    iframe.remove();
+  });
+
+  const module = await createWasmModule();
+  const messageErrorReceived = new Promise(resolve => {
+    window.onmessage = ({data}) => {
+      assert_equals('messageerror received', data);
+      resolve();
+    };
+  });
+  iframe.contentWindow.postMessage({message: 'send module', module}, "*");
+  await messageErrorReceived;
+}, "postMessaging a wasm module to an iframe in a different agent cluster fails");
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  const kRemoteOrigin = get_host_info().HTTPS_ORIGIN;
+  iframe.src = `${kRemoteOrigin}${base_path()}` +
+  'resources/incrementer-iframe-failure.html';
+  const iframeLoaded = new Promise(resolve => iframe.onload = resolve);
+  document.body.appendChild(iframe);
+  await iframeLoaded;
+  t.add_cleanup(() => {
+    iframe.remove();
+  });
+
+  const module = await createWasmModule();
+  const messageErrorReceived = new Promise(resolve => {
+    window.onmessage = ({data}) => {
+      assert_equals('messageerror received', data);
+      resolve();
+    };
+  });
+  iframe.contentWindow.postMessage({message: 'send module', module}, "*");
+  await messageErrorReceived;
+}, "postMessaging a wasm module to a cross-origin iframe in the same agent cluster fails");
+</script>
