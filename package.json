@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/web-platform-tests/wpt#readme",
   "dependencies": {
-    "@lwc/synthetic-shadow": "^2.4.0"
+    "@lwc/synthetic-shadow": "^2.4.0",
+    "escape-html": "^1.0.3"
   }
 }
