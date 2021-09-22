@@ -141,10 +141,10 @@ const constructSummaryHTML = metadata => `
         </ul>
       </li>
       <li>
-        With the synthetic shadow polyfill present, a total of ${metadata.withSyntheticShadow.overall.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.overall.numFailedSubtests.toLocaleString()} subtests failed.
+        With the synthetic shadow polyfill enabled:
         <ul>
           <li>a total of ${metadata.withSyntheticShadow.overall.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.overall.numFailedSubtests.toLocaleString()} subtests failed.</li>
-          <li>of those, some tests <i>did not</i> fail without the polyfill: ${metadata.withSyntheticShadow.unique.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.unique.numFailedSubtests.toLocaleString()} subtests.</li>
+          <li>of those, some tests <i>only failed</i> when the polyfill was enabled: ${metadata.withSyntheticShadow.unique.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.unique.numFailedSubtests.toLocaleString()} subtests.</li>
         </ul>
       </li>
     </ul>

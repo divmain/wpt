@@ -12,7 +12,7 @@ pip install --user virtualenv
 sudo -n true && ./wpt make-hosts-file | sudo tee -a /etc/hosts
 ```
 
-Inject LWC synthetic-shadow:
+To refresh tests from master and re-inject LWC synthetic-shadow:
 
 ```bash
 npm install
@@ -25,29 +25,24 @@ cp node_modules/@lwc/synthetic-shadow/dist/synthetic-shadow.js ./resources/
 Run tests:
 
 ```bash
-./wpt run chrome [tests]
-# OR
-./wpt run chrome
+# First with the synthetic shadow polyfill present.
+./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --test-types testharness --skip-timeout chrome --log-wptreport="./lwc/reports/report-synthetic-shadow-$(date +%s).json" --headless --processes=6
+# Then without the polyfill
+git checkout master
+./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --test-types testharness --skip-timeout chrome --log-wptreport="./lwc/reports/report-master-$(date +%s).json" --headless --processes=6
 ```
 
-If the script can't find your Chrome binary, try:
+To generate a report:
 
 ```bash
-# this
-./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty 2>&1 > ./stdout.txt
-# without worker tests (which all time out)
-./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --install-webdriver --include-file ./lwc/test-list.txt --test-types testharness --skip-timeout chrome --log-html ./report.html | tee /dev/tty 2>&1 > ./stdout.txt
-# maybe better?
-./wpt run --binary "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --test-types testharness --skip-timeout chrome --log-wptreport=report.json --log-wptscreenshot=screenshots.txt --headless --processes=6 | tee /dev/tty 2>&1 > ./stdout.txt
+node ./lwc/generate-report.js ./lwc/reports/report-master-DATE.json ./lwc/reports/report-synthetic-shadow-DATE.json > ./report.html
 ```
 
-Install `chromedriver` if prompted.
-
-Run tests manually:
+To run tests manually:
 
 ```bash
 ./wpt serve
 ```
 
-Then run [a test](http://web-platform.test:8000/).
+Then select [a test](http://web-platform.test:8000/).
 
