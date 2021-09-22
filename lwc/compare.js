@@ -4,13 +4,6 @@ import * as path from 'path';
 import escape from 'escape-html';
 
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const getFullPath = relPath => path.resolve(__dirname, relPath);
-
-const { results: resultsMaster } = JSON.parse(readFileSync(getFullPath('../../report-master.json')));
-const { results: resultsSS }= JSON.parse(readFileSync(getFullPath('../../report-synthetic-shadow.json')));
-
-
 const pickFailures = results => {
   const testFailures = new Map();
 
@@ -115,7 +108,50 @@ const constructFailureTreeHTML = root => {
   }
 };
 
-const constructHTMLReport = (uniqueFailuresInMaster, uniqueFailuresWithSS) => {
+const countTests = results => {
+  let numTests = 0;
+  let numSubtests = 0;
+  for (const entry of results) {
+    numTests += 1;
+    numSubtests += entry.subtests.length;
+  }
+  return { numTests, numSubtests };
+};
+
+const countFailures = failures => {
+  let numFailedTests = 0;
+  let numFailedSubtests = 0;
+  for (const subtestFailures of failures.values()) {
+    numFailedTests += 1;
+    numFailedSubtests += [...subtestFailures.values()].length
+  }
+  return { numFailedTests, numFailedSubtests };
+};
+
+const constructSummaryHTML = metadata => `
+  <div class="summary">
+    <h2>Summary</h2>
+    <ul>
+      <li>A total of ${metadata.total.numTests.toLocaleString()} tests were run with ${metadata.total.numSubtests.toLocaleString()} sub-tests.</li>
+      <li>
+        On master (no polyfill):
+        <ul>
+          <li>a total of ${metadata.withoutSyntheticShadow.overall.numFailedTests.toLocaleString()} tests and ${metadata.withoutSyntheticShadow.overall.numFailedSubtests.toLocaleString()} subtests failed.</li>
+          <li>of those, some tests <i>did not</i> fail when the polyfill is present: ${metadata.withoutSyntheticShadow.unique.numFailedTests.toLocaleString()} tests and ${metadata.withoutSyntheticShadow.unique.numFailedSubtests.toLocaleString()} subtests.</li>
+        </ul>
+      </li>
+      <li>
+        With the synthetic shadow polyfill present, a total of ${metadata.withSyntheticShadow.overall.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.overall.numFailedSubtests.toLocaleString()} subtests failed.
+        <ul>
+          <li>a total of ${metadata.withSyntheticShadow.overall.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.overall.numFailedSubtests.toLocaleString()} subtests failed.</li>
+          <li>of those, some tests <i>did not</i> fail without the polyfill: ${metadata.withSyntheticShadow.unique.numFailedTests.toLocaleString()} tests and ${metadata.withSyntheticShadow.unique.numFailedSubtests.toLocaleString()} subtests.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+`;
+
+const constructHTMLReport = (uniqueFailuresInMaster, uniqueFailuresWithSS, summaryHTML) => {
   const failureTreeMaster = createFailureTree(uniqueFailuresInMaster);
   const failureTreeSS = createFailureTree(uniqueFailuresWithSS);
 
@@ -150,6 +186,10 @@ const constructHTMLReport = (uniqueFailuresInMaster, uniqueFailuresWithSS) => {
         <a href="https://github.com/salesforce/lwc/tree/master/packages/%40lwc/synthetic-shadow">@lwc/synthetic-shadow</a>
         is loaded prior to the test harness.<p>
 
+        ${summaryHTML}
+
+        <h2>Failure Details</h2>
+
         ${wrapInDetails(false, '<b>Failing with Polyfill Loaded</b>', `
           <p style="padding-left: 24px;"><i>These tests <b>pass</b> in master but fail when the
           synthetic shadow polyfill is loaded.</i></p>
@@ -171,9 +211,42 @@ const constructHTMLReport = (uniqueFailuresInMaster, uniqueFailuresWithSS) => {
   `;
 };
 
-const failuresMaster = pickFailures(resultsMaster);
-const failuresSS = pickFailures(resultsSS);
-const uniqueFailuresInMaster = getUniqueFailures(failuresMaster, failuresSS);
-const uniqueFailuresWithSS = getUniqueFailures(failuresSS, failuresMaster);
+(() => {
+  let [ , , pathMaster, pathSS ] = process.argv;
+  if (!pathMaster || !pathSS) {
+    throw new Error('You must provide two arguments: master-report.json synthetic-shadow-report.json');
+  }
 
-console.log(constructHTMLReport(uniqueFailuresInMaster, uniqueFailuresWithSS))
+  pathMaster = path.resolve(process.cwd(), pathMaster);
+  pathSS = path.resolve(process.cwd(), pathSS);
+
+  const { results: resultsMaster } = JSON.parse(readFileSync(pathMaster));
+  const { results: resultsSS } = JSON.parse(readFileSync(pathSS));
+  
+  const failuresMaster = pickFailures(resultsMaster);
+  const failuresSS = pickFailures(resultsSS);
+  const uniqueFailuresInMaster = getUniqueFailures(failuresMaster, failuresSS);
+  const uniqueFailuresWithSS = getUniqueFailures(failuresSS, failuresMaster);
+
+  const summaryMetadata = {
+    total: countTests(resultsMaster),
+    withSyntheticShadow: {
+      overall: countFailures(failuresSS),
+      unique: countFailures(uniqueFailuresWithSS),
+    },
+    withoutSyntheticShadow: {
+      overall: countFailures(failuresMaster),
+      unique: countFailures(uniqueFailuresInMaster),
+    },
+  };
+
+  const reportHtml = constructHTMLReport(
+    uniqueFailuresInMaster,
+    uniqueFailuresWithSS,
+    constructSummaryHTML(summaryMetadata),
+  );
+
+  console.log(reportHtml);
+})();
+
+
