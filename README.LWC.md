@@ -1,4 +1,4 @@
-# TODO
+# Running WPT with Synthetic Shadow Polyfill
 
 Setup local machine to run tests (macOS):
 
